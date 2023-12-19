@@ -1,0 +1,40 @@
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class BinanceRateTracker {
+
+    private double targetRate = 1500.0; // Set your target rate here
+    private double currentRate = 1400.0; // Initial rate for testing
+
+    public void startTracking() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                checkRate();
+            }
+        }, 0, 5000); // Check every 5 seconds (adjust as needed)
+    }
+
+    private void checkRate() {
+        // Simulate fetching the current Binance rate (replace with actual logic)
+        double fetchedRate = fetchBinanceRate();
+
+        System.out.println("Current Rate: " + fetchedRate);
+
+        if (fetchedRate >= targetRate) {
+            System.out.println("Target rate reached! Notify the user."); // Replace with notification logic
+        }
+    }
+
+    private double fetchBinanceRate() {
+        // Simulate fetching the rate from Binance (replace with actual API call)
+        // In a real application, you would use a library like HttpClient to make HTTP requests.
+        return currentRate += Math.random() * 10 - 5; // Simulate rate fluctuations
+    }
+
+    public static void main(String[] args) {
+        BinanceRateTracker tracker = new BinanceRateTracker();
+        tracker.startTracking();
+    }
+}
