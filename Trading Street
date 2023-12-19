@@ -1,10 +1,15 @@
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import org.json.JSONObject;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class BinanceRateTracker {
 
-    private double targetRate = 1500.0; // Set your target rate here
-    private double currentRate = 1400.0; // Initial rate for testing
+    private final String binanceApiUrl = "https://api.binance.com/api/v3/ticker/price?symbol=WDCUSDT";
+    private final double targetRate = 0.5; // Set your target rate here for WDC
 
     public void startTracking() {
         Timer timer = new Timer();
@@ -17,20 +22,22 @@ public class BinanceRateTracker {
     }
 
     private void checkRate() {
-        // Simulate fetching the current Binance rate (replace with actual logic)
-        double fetchedRate = fetchBinanceRate();
+        HttpResponse<JsonNode> response = Unirest.get(binanceApiUrl)
+                .header("Accept", "application/json")
+                .asJson();
 
-        System.out.println("Current Rate: " + fetchedRate);
+        if (response.isSuccess()) {
+            JSONObject data = response.getBody().getObject();
+            double currentRate = data.getDouble("price");
+            
+            System.out.println("Current Rate: " + currentRate);
 
-        if (fetchedRate >= targetRate) {
-            System.out.println("Target rate reached! Notify the user."); // Replace with notification logic
+            if (currentRate >= targetRate) {
+                System.out.println("Target rate reached! Notify the user."); // Replace with notification logic
+            }
+        } else {
+            System.err.println("Error fetching Binance rate: " + response.getStatusText());
         }
-    }
-
-    private double fetchBinanceRate() {
-        // Simulate fetching the rate from Binance (replace with actual API call)
-        // In a real application, you would use a library like HttpClient to make HTTP requests.
-        return currentRate += Math.random() * 10 - 5; // Simulate rate fluctuations
     }
 
     public static void main(String[] args) {
